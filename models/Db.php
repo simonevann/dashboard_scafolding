@@ -10,10 +10,11 @@ class Db extends PDO {
     
     public function __construct()
     {
-        $this->uname = "";
-        $this->passwd = "";
-        $this->hostname = "";
-        $this->dbname = "";
+        $ini = parse_ini_file('./config.ini');
+        $this->uname = $ini['db_user'];
+        $this->passwd = $ini['db_password'];
+        $this->hostname = $ini['db_host'];
+        $this->dbname = $ini['db_name'];
         try {
             parent::__construct('mysql:host=' . $this->hostname . ';dbname=' . $this->dbname, $this->uname, $this->passwd);
         } catch (PDOException $e) {

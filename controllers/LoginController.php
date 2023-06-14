@@ -17,6 +17,7 @@ class LoginController{
     //Fa il login, se l'utente è già loggato lo reindirizza alla dashboard, altrimenti lo reindirizza al login
     public function login($username, $password){
         $user = new User();
+        print_r($username);
         $login = $user->login($username, $password);
         if($login){
             header('Location: /admin');

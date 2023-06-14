@@ -1,8 +1,8 @@
 <?php
 // To call this page, in the browser type:
 // http://localhost/
-
-require_once('templates/header.php');
+session_start();
+require_once('template/head.php');
 ?>
 
 <div class="container">
@@ -10,5 +10,5 @@ require_once('templates/header.php');
 </div>
 
 <?php
-require_once('templates/footer.php');
+require_once('template/footer.php');
 ?>

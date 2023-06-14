@@ -12,12 +12,13 @@ class User extends Db
         parent::__construct();
     }
 
-    public function login($username, $password, $role = 1)
+    public function login($username, $password)
     {
         $hash = hash('sha256', $password);
-        $sql = "SELECT id, first_name, last_name, role FROM user WHERE username = :username AND password = :password AND role = :role AND active = 1";
+        print_r($hash);
+        $sql = "SELECT id, first_name, last_name FROM user WHERE email = :username AND password = :password AND active = 1";
         $stmt = $this->prepare($sql);
-        $stmt->execute(['username' => $username, 'password' => $hash, 'role' => $role]);
+        $stmt->execute(['username' => $username, 'password' => $hash]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user) {
             $_SESSION['user'] = $user;
@@ -39,7 +40,7 @@ class User extends Db
     //get all users, joined with the role table
     public function getAllUsers()
     {
-        $sql = "SELECT user.id, user.first_name, user.last_name, user.username, r.title as role  FROM user JOIN user_role r ON (r.id = user.role)";
+        $sql = "SELECT user.id, user.first_name, user.last_name, user.email FROM user";
         $stmt = $this->prepare($sql);
         $stmt->execute();
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -48,7 +49,7 @@ class User extends Db
 
     public function getUserById($id)
     {
-        $sql = "SELECT id, first_name, last_name, username, role FROM user WHERE id = :id";
+        $sql = "SELECT id, first_name, last_name, username FROM user WHERE id = :id";
         $stmt = $this->prepare($sql);
         $stmt->execute(['id' => $id]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -81,9 +82,9 @@ class User extends Db
     public function createUser($username, $external_id, $password, $role, $active = 0, $first_name = '', $last_name = '')
     {
         $hash = hash('sha256', $password);
-        $sql = "INSERT INTO user (first_name, last_name, username, external_id, password, role, active) VALUES (:first_name, :last_name, :username, :external_id, :password, :role, :active)";
+        $sql = "INSERT INTO user (first_name, last_name, username, external_id, password, active) VALUES (:first_name, :last_name, :username, :external_id, :password, :active)";
         $stmt = $this->prepare($sql);
-        $stmt->execute(['first_name' => $first_name, 'last_name' => $last_name, 'username' => $username, 'external_id' => $external_id, 'password' => $hash, 'role' => $role, 'active' => $active]);
+        $stmt->execute(['first_name' => $first_name, 'last_name' => $last_name, 'username' => $username, 'external_id' => $external_id, 'password' => $hash, 'active' => $active]);
         //return the new user id
         return $this->getLastUser();
     }
@@ -91,7 +92,7 @@ class User extends Db
     //get the last insered user
     public function getLastUser()
     {
-        $sql = "SELECT id, first_name, last_name, username, role FROM user ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id, first_name, last_name, username FROM user ORDER BY id DESC LIMIT 1";
         $stmt = $this->prepare($sql);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
